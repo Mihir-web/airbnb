@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Airbnb Clone</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Basic Styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        h1 {
+            text-align: center;
+            padding: 20px;
+            background-color: #ff5a5f;
+            color: white;
+        }
+        h2 {
+            text-align: center;
+            margin-top: 30px;
+        }
+        #gallery {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            padding: 20px;
+        }
+        .card {
+            width: 250px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            text-align: center;
+        }
+        .card img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+        }
+        .card h3 {
+            margin: 10px 0;
+            font-size: 18px;
+            color: #333;
+        }
+        .card p {
+            color: #555;
+            margin: 5px 0;
+        }
+        .card button {
+            background-color: #ff5a5f;
+            color: white;
+            border: none;
+            padding: 10px;
+            width: 100%;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 4px;
+        }
+        .card button:hover {
+            background-color: #e04e52;
+        }
+    </style>
+</head>
+<body>
+    <h1>Welcome to Airbnb Clone</h1>
+    <p>This is a work in progress!</p>
+
+    <!-- Gallery Section -->
+    <h2>Explore Homes</h2>
+    <div id="gallery">
+        <!-- Homes will be dynamically rendered here -->
+    </div>
+
+    <script>
+        // Fetch homes data from the server and populate the gallery
+        async function fetchHomes() {
+            try {
+                const response = await fetch('/api/homes');
+                const homes = await response.json();
+
+                const gallery = document.getElementById('gallery');
+                gallery.innerHTML = homes.map(home => `
+                    <div class="card">
+                        <img src="${home.imageUrl || 'https://via.placeholder.com/250'}" alt="${home.title}" />
+                        <h3>${home.title}</h3>
+                        <p>${home.location}</p>
+                        <p>Price: $${home.price}/night</p>
+                        <button onclick="bookHome('${home.title}')">Book Now</button>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error fetching homes:', error);
+            }
+        }
+
+        // Placeholder booking function
+        function bookHome(title) {
+            alert(`Booking request for: ${title}`);
+        }
+
+        // Load homes when the page loads
+        window.onload = fetchHomes;
+    </script>
+</body>
+</html>
+
+    
+    
+</body>
+</html>

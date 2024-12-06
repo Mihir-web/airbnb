@@ -1,0 +1,74 @@
+<div class="container mt-5">
+    <h2 class="text-center">Add New Movie</h2>
+    <form action="/api/movie" method="POST" enctype="multipart/form-data">
+      <div class="form-row">
+        <div class="form-group col-md-6">
+          <label for="movie_id">Movie ID</label>
+          <input type="number" class="form-control" id="movie_id" name="Movie_ID" required>
+        </div>
+        <div class="form-group col-md-6">
+          <label for="title">Title</label>
+          <input type="text" class="form-control" id="title" name="Title" required>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group col-md-4">
+          <label for="year">Year</label>
+          <input type="number" class="form-control" id="year" name="Year" min="1900" max="2099" required>
+        </div>
+        <div class="form-group col-md-4">
+          <label for="rated">Rated</label>
+          <input type="text" class="form-control" id="rated" name="Rated" required>
+        </div>
+        <div class="form-group col-md-4">
+          <label for="released">Released</label>
+          <input type="text" class="form-control" id="released" name="Released" placeholder="YYYY-MM-DD" required>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group col-md-6">
+          <label for="runtime">Runtime</label>
+          <input type="text" class="form-control" id="runtime" name="Runtime" required>
+        </div>
+        <div class="form-group col-md-6">
+          <label for="genre">Genre</label>
+          <input type="text" class="form-control" id="genre" name="Genre" required>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="director">Director</label>
+        <input type="text" class="form-control" id="director" name="Director" required>
+      </div>
+      <div class="form-group">
+        <label for="writer">Writer</label>
+        <input type="text" class="form-control" id="writer" name="Writer" required>
+      </div>
+      <div class="form-group">
+        <label for="actors">Actors</label>
+        <input type="text" class="form-control" id="actors" name="Actors" required>
+      </div>
+      <div class="form-group">
+        <label for="plot">Plot</label>
+        <textarea class="form-control" id="plot" name="Plot" rows="3" required></textarea>
+      </div>
+      <div class="form-row">
+        <div class="form-group col-md-4">
+          <label for="language">Language</label>
+          <input type="text" class="form-control" id="language" name="Language" required>
+        </div>
+        <div class="form-group col-md-4">
+          <label for="country">Country</label>
+          <input type="text" class="form-control" id="country" name="Country" required>
+        </div>
+        <div class="form-group col-md-4">
+          <label for="awards">Awards</label>
+          <input type="text" class="form-control" id="awards" name="Awards">
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="poster">Poster (JPG only)</label>
+        <input type="file" class="form-control-file" id="poster" name="Poster" accept=".jpg" required>
+      </div>
+      <button type="submit" class="btn btn-primary btn-block">Add Movie</button>
+    </form>
+  </div>

@@ -1,0 +1,22 @@
+<table border="1">
+    <tr>
+        <th>Movie Title</th>
+        <th>Year</th>
+        <th>Released</th>
+        <th>Genre</th>
+        <th>Actors</th>
+        <th>Country</th>
+        <th>Language</th>
+    </tr>
+    {{#each result}}
+    <tr>
+        <td>{{this.Title}}</td>
+        <td>{{this.Year}}</td>
+        <td>{{this.Released}}</td>
+        <td>{{this.Genre}}</td>
+        <td>{{Actors}}</td>
+        <td>{{Country}}</td>
+        <td>{{Language}}</td>
+    </tr>
+    {{/each}}
+</table>

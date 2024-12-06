@@ -1,0 +1,26 @@
+{
+  "name": "asn4-mihir",
+  "version": "1.0.0",
+  "description": "Assignment 2 ",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Mihir-web/Express-Assignment2-Mihir.git"
+  },
+  "author": "Mihir Hirpara",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Mihir-web/Express-Assignment2-Mihir/issues"
+  },
+  "homepage": "https://github.com/Mihir-web/Express-Assignment2-Mihir#readme",
+  "dependencies": {
+    "express": "^4.21.1",
+    "express-handlebars": "^8.0.1",
+    "express-validator": "^7.2.0",
+    "mongoose": "^8.8.3",
+    "multer": "^1.4.5-lts.1"
+  }
+}

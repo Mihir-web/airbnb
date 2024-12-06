@@ -1,0 +1,77 @@
+body {
+    /* padding: 50px; */
+    font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+    border: 1px solid gray;
+    
+   
+  }
+  
+main{
+    /* height:65vh; */
+    max-height: auto;
+    border: 1px solid gray;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* color:#fff; */
+    font-weight: 600;
+    /* background-color: #100f17; */
+}
+
+/* header{
+    background:#e0e0e0;
+    color:#4fabc5;
+    text-align: center;
+    padding:15px;
+    border: 1px solid gray;
+    font-weight: 600;
+}
+
+footer{
+    background:#e0e0e0;
+    color:#4fabc5;
+    text-align: center;
+    padding:15px;
+    border: 1px solid gray;
+    font-weight: 600;
+    
+}
+
+table tr th{
+    color:green;
+}
+
+table tr td{
+    color:#000;
+}
+
+.highlighted_row {
+    background-color: #ffdddd;
+    font-weight: bold;
+} */
+
+
+.rating-logo{
+color:#e4d804;
+}
+
+.released_date{
+    font-size: 18px;
+}
+
+.detail-link{
+    background-color: #e4d804;
+    color:#000;
+    padding: 10px;
+    border-radius: 14px;
+    text-decoration: none !important;
+}
+
+.detail-link:hover{
+    background-color: #cbc105;
+    color:#000;
+    padding: 10px;
+    border-radius: 14px;
+    text-decoration: none !important;
+}
+

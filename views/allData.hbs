@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>SB Admin 2 - Tables</title>
+
+    <!-- Custom fonts for this template -->
+    <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+    <link
+        href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+        rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="../css/sb-admin-2.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this page -->
+    <link href="../vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
+
+</head>
+
+<body id="page-top">
+
+    <!-- Page Wrapper -->
+    <div id="wrapper">
+
+        <!-- Sidebar -->
+        <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+
+            <!-- Sidebar - Brand -->
+            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
+                <div class="sidebar-brand-icon rotate-n-15">
+                    <i class="fas fa-laugh-wink"></i>
+                </div>
+                <div class="sidebar-brand-text mx-3">SB Admin <sup>2</sup></div>
+            </a>
+
+            <!-- Divider -->
+            <hr class="sidebar-divider my-0">
+
+            <!-- Nav Item - Dashboard -->
+            <li class="nav-item">
+                <a class="nav-link" href="index.html">
+                    <i class="fas fa-fw fa-tachometer-alt"></i>
+                    <span>Dashboard</span></a>
+            </li>
+
+            
+
+            <!-- Divider -->
+            <hr class="sidebar-divider">
+
+            <!-- Heading -->
+            <div class="sidebar-heading">
+                Air BNB
+            </div>
+
+            
+
+            
+
+            <!-- Nav Item - Tables -->
+            <li class="nav-item active">
+                <a class="nav-link" href="tables.html">
+                    <i class="fas fa-fw fa-table"></i>
+                    <span>Tables</span></a>
+            </li>
+
+            <!-- Divider -->
+            <hr class="sidebar-divider d-none d-md-block">
+
+            <!-- Sidebar Toggler (Sidebar) -->
+            <div class="text-center d-none d-md-inline">
+                <button class="rounded-circle border-0" id="sidebarToggle"></button>
+            </div>
+
+        </ul>
+        <!-- End of Sidebar -->
+
+        <!-- Content Wrapper -->
+        <div id="content-wrapper" class="d-flex flex-column">
+
+            <!-- Main Content -->
+            <div id="content">
+
+                <!-- Topbar -->
+                <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+
+                    <!-- Sidebar Toggle (Topbar) -->
+                    <form class="form-inline">
+                        <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                    </form>
+
+                    
+                    <!-- Topbar Navbar -->
+                    <ul class="navbar-nav ml-auto">
+
+                       
+
+                        <div class="topbar-divider d-none d-sm-block"></div>
+
+                        <!-- Nav Item - User Information -->
+                        <li class="nav-item dropdown no-arrow">
+                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <span class="mr-2 d-none d-lg-inline text-gray-600 small">Douglas McGee</span>
+                                <img class="img-profile rounded-circle"
+                                    src="../img/undraw_profile.svg">
+                            </a>
+                            <!-- Dropdown - User Information -->
+                            <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
+                                aria-labelledby="userDropdown">
+                                <a class="dropdown-item" href="#">
+                                    <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    Profile
+                                </a>
+                                <a class="dropdown-item" href="#">
+                                    <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    Settings
+                                </a>
+                                <a class="dropdown-item" href="#">
+                                    <i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    Activity Log
+                                </a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
+                                    <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    Logout
+                                </a>
+                            </div>
+                        </li>
+
+                    </ul>
+
+                </nav>
+                <!-- End of Topbar -->
+
+                <!-- Begin Page Content -->
+                <div class="container-fluid">
+
+                    <!-- DataTales Example -->
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">Listing</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Title</th>
+                                            <th data-orderable="false">Poster</th>
+                                            <th>Rating</th>
+                                            <th>Procing</th>
+                                            <th data-orderable="false">Other Details</th>
+                                            <th data-orderable="false">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                       {{#each result}}
+<tr>
+  <td>{{this.Movie_ID}}</td>
+  <td width="25%">
+    {{this.name}}
+    <br>
+    <span style="color:gray; font-size:12px;">{{this.property_type}}</span>
+    <br>
+    <span style="color:gray; font-size:12px;"> <span style="color:black;">Room Type:</span> {{this.room_type}}</span>
+    <br>
+    <span style="color:gray; font-size:12px;"> <span style="color:black;">Accommodate :</span> {{this.accommodates}} People</span>
+    <br>
+    <span style="color:gray; font-size:12px;"> <span style="color:black;">Beds :</span> {{this.bedrooms}} | <span style="color:black;">Baths :</span> {{this.bathrooms}}</span>
+    
+  </td>
+  <td>
+  <a href="{{this.images.picture_url}}" onerror="this.href='/images/default-poster.jpg';" data-fancybox data-caption="Single image">
+  <img src="{{this.images.picture_url}}" onerror="this.src='/images/default-poster.jpg';" style="height:5 0px; width:50px; border-radius:5px;"/>
+</a>
+  </td>
+  <td><i class="fa-solid fa-star rating-logo"></i> {{this.imdbRating}}</td>
+  <td>
+    <span style="color:gray; font-size:12px;"> <span style="color:black;">Total Price: </span><span style="color:green;">$ {{this.price}}</span></span>
+    <br>
+    <span style="color:gray; font-size:12px;"> <span style="color:black;">Cleaning Fee: </span><span style="color:green;">$ {{this.cleaning_fee}}</span></span>
+  <td>
+    <!-- Button trigger modal -->
+<button type="button" class="btn btn-success" data-toggle="modal" data-target="#exampleModal{{this.Movie_ID}}">
+  <i class="fa-regular fa-eye"></i>
+</button>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal{{this.Movie_ID}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">{{this.Title}}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <ul>
+          <li>Year: <span class="text-secondary">{{this.Year}}</span></li>
+          <li>Rated: <span class="text-secondary">{{this.Rated}}</span></li>
+          <li>Runtime: <span class="text-secondary">{{this.Runtime}}</span></li>
+          <li>Genre: <span class="text-secondary">{{this.Genre}}</span></li>
+          <li>Director: <span class="text-secondary">{{this.Director}}</span></li>
+          <li>Writer: <span class="text-secondary">{{this.Writer}}</span></li>
+          <li>Actors: <span class="text-secondary">{{this.Actors}}</span></li>
+          <li>Plot: <span class="text-secondary">{{this.Plot}}</span></li>
+          <li>Language: <span class="text-secondary">{{this.Language}}</span></li>
+          <li>Country: <span class="text-secondary">{{this.Country}}</span></li>
+          <li>Awards: <span class="text-secondary">{{this.Awards}}</span></li>
+          <li>Metascore: <span class="text-secondary">{{this.Metascore}}</span></li>
+          <li>Production: <span class="text-secondary">{{this.Production}}</span></li>
+          <li>TomatoUrl: <a href="{{this.tomatoURL}}" target="_blank"><span class="text-primary">{{this.tomatoURL}}</span></a></li>
+          </ul>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+  </td>
+  
+  <td><a href="/api/editmovie/{{this._id}}" class="btn btn-primary"><i class="fa-solid fa-pen"></i></a>
+   <a href="#" class="btn btn-danger delete-btn" data-movie-id="{{this._id}}">
+  <i class="fa-solid fa-trash"></i>
+</a>
+
+   </td>
+</tr>
+{{/each}}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <!-- /.container-fluid -->
+
+            </div>
+            <!-- End of Main Content -->
+
+            <!-- Footer -->
+            <footer class="sticky-footer bg-white">
+                <div class="container my-auto">
+                    <div class="copyright text-center my-auto">
+                        <span>Copyright &copy; Your Website 2020</span>
+                    </div>
+                </div>
+            </footer>
+            <!-- End of Footer -->
+
+        </div>
+        <!-- End of Content Wrapper -->
+
+    </div>
+    <!-- End of Page Wrapper -->
+
+    <!-- Scroll to Top Button-->
+    <a class="scroll-to-top rounded" href="#page-top">
+        <i class="fas fa-angle-up"></i>
+    </a>
+
+    <!-- Logout Modal-->
+    <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                    <a class="btn btn-primary" href="login.html">Logout</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap core JavaScript-->
+    <script src="../vendor/jquery/jquery.min.js"></script>
+    <script src="../vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Core plugin JavaScript-->
+    <script src="../vendor/jquery-easing/jquery.easing.min.js"></script>
+
+    <!-- Custom scripts for all pages-->
+    <script src="../js/sb-admin-2.min.js"></script>
+
+    <!-- Page level plugins -->
+    <script src="../vendor/datatables/jquery.dataTables.min.js"></script>
+    <script src="../vendor/datatables/dataTables.bootstrap4.min.js"></script>
+
+    <!-- Page level custom scripts -->
+    <script src="../js/demo/datatables-demo.js"></script>
+
+      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+  // Attach click event to delete buttons
+  document.querySelectorAll('.delete-btn').forEach(button => {
+    button.addEventListener('click', function(e) {
+      e.preventDefault();  // Prevent default anchor behavior
+      const movieId = this.getAttribute('data-movie-id');  // Get the movie ID from the button's data attribute
+
+      // Show SweetAlert confirmation
+      Swal.fire({
+        title: 'Are you sure?',
+        text: "You won't be able to revert this!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, delete it!',
+        cancelButtonText: 'Cancel',
+      }).then((result) => {
+        if (result.isConfirmed) {
+          // If the user confirms, delete the movie
+          deleteMovie(movieId);
+        }
+      });
+    });
+  });
+
+  // Function to delete the movie using AJAX
+  function deleteMovie(movieId) {
+    fetch(`/api/deletemovie/${movieId}`, {
+      method: 'GET',  // Assuming you're using a GET method for deletion
+      headers: {
+        'Content-Type': 'application/json'
+      },
+    })
+    .then(response => {
+      if (response.ok) {
+        // If the deletion is successful, show a success message
+        Swal.fire(
+          'Deleted!',
+          'The movie has been deleted.',
+          'success'
+        ).then(() => {
+          // Optionally, you can reload the page or redirect
+          window.location.reload();  // Reload the page to update the movie list
+        });
+      } else {
+        // Show an error message if something went wrong
+        Swal.fire(
+          'Error!',
+          'There was a problem deleting the movie.',
+          'error'
+        );
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      Swal.fire(
+        'Error!',
+        'There was a problem deleting the movie.',
+        'error'
+      );
+    });
+  }
+</script>
+
+</body>
+
+</html>

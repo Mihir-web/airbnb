@@ -1,0 +1,94 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Airbnb Clone</title>
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <div class="logo">
+                <span>Airbnb</span>
+            </div>
+            <div class="account-section">
+                <button class="login-btn">Login</button>
+                <button class="signup-btn">Sign Up</button>
+            </div>
+        </div>
+    </header>
+
+
+    <!-- Search Section -->
+    <form id="searchForm">
+        <input type="text" id="location" name="location" placeholder="Enter location" />
+        <input type="number" id="minPrice" name="minPrice" placeholder="Min price" />
+        <input type="number" id="maxPrice" name="maxPrice" placeholder="Max price" />
+        <select id="filter" name="filter">
+            <option value="">Select filter</option>
+            <option value="wifi">Wi-Fi</option>
+            <option value="parking">Parking</option>
+            <option value="pool">Swimming Pool</option>
+        </select>
+        <button type="submit">Search</button>
+    </form>
+
+
+    <!-- Gallery Section -->
+    <h2>Explore Homes</h2>
+    <div id="gallery">
+        {{#each result}}
+        <div class="card">
+                    <div class="image-container">
+                        <img src="{{this.images.picture_url}}" alt="{{this.name}}" />
+                    </div>
+                    <div class="content">
+                        <h3>{{this.name}}</h3>
+                        <p>${home.location}</p>
+                        <p>Price: $${home.price}/night</p>
+                        <button onclick="bookHome('${home.title}')">Book Now</button>
+                    </div>
+                </div>
+                {{/each}}
+    </div>
+
+    <!-- FAQ Section -->
+    <section id="faq">
+        <h2>Your Questions, Answered</h2>
+        <div class="faq-item">
+            <button class="faq-question">What is Airbnb and how does it work?</button>
+            <div class="faq-answer">
+                <p>Airbnb is an online platform where hosts can list their available properties for short-term rent. Guests can search for and book these properties. Hosts and guests communicate through the platform, and Airbnb handles payments and provides reviews.</p>
+            </div>
+        </div>
+        <div class="faq-item">
+            <button class="faq-question">How do I use search filters?</button>
+            <div class="faq-answer">
+                <p>You can use search filters on Airbnb to narrow down your results. Filters can include location, price range, type of property, and amenities like Wi-Fi or parking. Simply enter your preferences and the results will be adjusted accordingly.</p>
+            </div>
+        </div>
+        <div class="faq-item">
+            <button class="faq-question">Do I need to meet my Host?</button>
+            <div class="faq-answer">
+                <p>No, you don't always need to meet your host. Some hosts offer self-check-in, while others may prefer to meet guests. It's best to check the listing for specific details on the host's preferences.</p>
+            </div>
+        </div>
+        <div class="faq-item">
+            <button class="faq-question">What if I need to cancel due to a problem with the listing or Host?</button>
+            <div class="faq-answer">
+                <p>If there is an issue with the listing or host, you can contact Airbnb's support team. Depending on the situation, you may be eligible for a refund or to cancel the reservation without penalties, especially if the listing does not meet the description.</p>
+            </div>
+        </div>
+        <div class="faq-item">
+            <button class="faq-question">Need more information?</button>
+            <div class="faq-answer">
+                <p>For more information, you can visit the Help Center or contact Airbnb's support team directly. They can assist you with any issues related to bookings, payments, or safety.</p>
+            </div>
+        </div>
+    </section>
+
+    
+</body>
+</html>

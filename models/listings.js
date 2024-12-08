@@ -96,4 +96,4 @@ const listingSchema = new mongoose.Schema({
 });
 
 // Check if the model is already compiled
-module.exports = mongoose.models.Listing || mongoose.model("listings", listingSchema, 'listingsAndReviews');
+module.exports =  mongoose.model("listings", listingSchema, 'listingsAndReviews');

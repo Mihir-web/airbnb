@@ -4,7 +4,8 @@ const PageHits = require('../models/PageHits'); // Import the PageHits model
 
 module.exports = async function trackPageHit(req, res, next) {
   try {
-    const ip = req.ip || req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+    const xForwardedFor = req.headers['x-forwarded-for'];
+  const ip = xForwardedFor ? xForwardedFor.split(',')[0] : req.ip;
     const deviceType = UserAgent.parse(req.headers['user-agent']).device.toString();
     const listingId = req.params.listing_id || req.body.listing_id;
 

@@ -10,6 +10,9 @@ const databaseConfig = require('./config/database');
 const ListingsModel = require('./models/listings'); // Renamed for clarity
 const flash = require('connect-flash'); // Add this import
 const { authenticate, authorizeAdmin } = require('./middleware/auth');
+const trackPageHit = require('./middleware/trackPageHit');
+const PageHits = require('./models/PageHits');
+const { Parser } = require('json2csv')
 
 const jwt = require('jsonwebtoken');
 
@@ -55,6 +58,29 @@ app.engine('.hbs', engine({ extname: '.hbs',  helpers: {
       return array[array.length - 1];
     }
     return null; // Return null if array is empty or invalid
+  },
+  updateDate: (date, newYear, newMonth, newDay) => {
+    
+    const originalDate = new Date(date);
+  
+    if (isNaN(originalDate)) {
+     
+      return '';
+    }
+  
+    originalDate.setFullYear(newYear);
+    originalDate.setMonth(newMonth - 1); // Correct month (0-indexed)
+    originalDate.setDate(newDay);
+  
+    const formattedDate = new Intl.DateTimeFormat('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: '2-digit',
+    }).format(originalDate);
+  
+    
+  
+    return formattedDate;
   }
 }, runtimeOptions: {
     allowProtoPropertiesByDefault: true,
@@ -110,6 +136,8 @@ app.get('/listing', async (req, res) => {
     const total = await ListingsModel.countDocuments(query);
     const totalPages = Math.ceil(total / itemsPerPage);
 
+    
+    
     // Set the range of pages to display
     const delta = 1; // Number of pages around the current page
     const startPage = Math.max(1, currentPage - delta); // Start from at least page 1
@@ -164,6 +192,22 @@ app.get('/listing', async (req, res) => {
   }
 });
 
+app.get('/detail/:listing_id', trackPageHit, async (req, res) => {
+  try {
+    const listingId = req.params.listing_id; // Get the ID from the URL
+    const listing = await ListingsModel.findById(listingId); // Fetch the record from the database
+
+    if (!listing) {
+      return res.status(404).send('Listing not found'); // Handle case where the listing doesn't exist
+    }
+
+    
+    res.render('detail', { listing }); // Pass the listing data to the HBS template
+  } catch (err) {
+    res.status(500).send('Error fetching listing details: ' + err.message);
+  }
+});
+
 
 
 
@@ -207,7 +251,7 @@ app.post('/login',
     // res.json({ token, message: 'Login successful' });
     res.redirect('/admin/listing');
   } catch (error) {
-    console.error(error);
+    
     res.status(500).json({ message: 'Internal Server Error', error });
   }    
 }
@@ -456,7 +500,7 @@ app.get('/admin/listing/:listingId', authenticate, authorizeAdmin, async (req, r
         review_scores: listing.review_scores,
         reviews: listing.reviews,
       }));
-      console.log(result);
+      
       res.render('allData', { result });
     } else {
       res.status(404).render('error', { message: 'No listings found' });
@@ -465,6 +509,41 @@ app.get('/admin/listing/:listingId', authenticate, authorizeAdmin, async (req, r
     res.status(500).send('Error fetching listings: ' + err.message);
   }
 });
+
+
+app.get('/admin/export-csv', async (req, res) => {
+  try {
+    const { startDate, endDate, listingId, ip } = req.query;
+
+    // Build the query object
+    const query = {};
+    if (startDate) query.createdAt = { $gte: new Date(startDate) };
+    if (endDate) query.createdAt = { ...query.createdAt, $lte: new Date(endDate) };
+    if (listingId) query.listingId = listingId;
+    if (ip) query.ip = ip;
+
+    // Fetch data based on the query
+    const pageHits = await PageHits.find(query).lean();
+console.log(pageHits);
+    if (!pageHits || pageHits.length === 0) {
+      return res.status(404).send('No data found for the given criteria.');
+    }
+
+    // Define the fields for the CSV
+    const fields = ['ip', 'deviceType', 'listingId', 'createdAt'];
+    const json2csvParser = new Parser({ fields });
+    const csv = json2csvParser.parse(pageHits);
+
+    // Set the response headers for file download
+    res.header('Content-Type', 'text/csv');
+    res.attachment('page_hits_report.csv');
+    return res.send(csv);
+  } catch (error) {
+    console.error('Error exporting CSV:', error);
+    res.status(500).send('Error exporting CSV.');
+  }
+});
+
 
 
 

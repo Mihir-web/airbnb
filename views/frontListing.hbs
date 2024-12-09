@@ -44,25 +44,65 @@
         </div>
     </header>
 
-
+<div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
+  <ol class="carousel-indicators">
+    <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
+    <li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
+    <li data-target="#carouselExampleIndicators" data-slide-to="2"></li>
+    <li data-target="#carouselExampleIndicators" data-slide-to="3"></li>
+  </ol>
+  <div class="carousel-inner">
+    <div class="carousel-item active" style="height:510px; background-position:center; background-size:cover;">
+      <img class="d-block img-fluid w-100" src="../images/banner3.jpg" alt="First slide">
+      <div class="carousel-caption d-none d-md-block my-auto">
+    <h1 class="text-light">Discover Your Next Destination</h1>
+    <p>From cozy cabins to luxurious retreats, find the perfect stay for your adventure.</p>
+  </div>
+    </div>
+    <div class="carousel-item" style="height:510px; background-position:center; background-size:cover;">
+      <img class="d-block img-fluid w-100" src="../images/banner1.jpg" alt="Second slide">
+       <div class="carousel-caption d-none d-md-block">
+    <h1 class="text-light">Experience the World Like a Local</h1>
+    <p>Stay in unique homes and create unforgettable memories anywhere you go.</p>
+  </div>
+    </div>
+    <div class="carousel-item" style="height:510px; background-position:center; background-size:cover;">
+      <img class="d-block img-fluid w-100 " src="../images/banner2.jpg" alt="Third slide">
+       <div class="carousel-caption d-none d-md-block">
+    <h1 class="text-light">Where Comfort Meets Convenience</h1>
+    <p>Explore handpicked stays designed to make you feel at home, away from home.</p>
+  </div>
+    </div>
+    <div class="carousel-item" style="height:510px; background-position:center; background-size:cover;">
+      <img class="d-block img-fluid w-100 " src="../images/banner4.jpg" alt="Third slide">
+       <div class="carousel-caption d-none d-md-block">
+    <h1 class="text-light">Your Journey Starts Here</h1>
+    <p>Find stays, plan trips, and explore experiences—all in one place.</p>
+  </div>
+    </div>
+  </div>
+  <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
+    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
+    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+    <span class="sr-only">Next</span>
+  </a>
+</div>
     <!-- Search Section -->
     <form id="searchForm">
-        <input type="text" id="location" name="location" placeholder="Enter location" />
-        <input type="number" id="minPrice" name="minPrice" placeholder="Min price" />
-        <input type="number" id="maxPrice" name="maxPrice" placeholder="Max price" />
-        <select id="filter" name="filter">
-            <option value="">Select filter</option>
-            <option value="wifi">Wi-Fi</option>
-            <option value="parking">Parking</option>
-            <option value="pool">Swimming Pool</option>
-        </select>
+      <input type="text" id="search" name="search" placeholder="Enter Name" />
+        <input type="text" id="location" name="location" placeholder="Enter Location" />
+        <input type="number" id="minPrice" name="minPrice" placeholder="Min Price" />
+        <input type="number" id="maxPrice" name="maxPrice" placeholder="Max Price" />
         <button type="submit">Search</button>
     </form>
 
 
     <!-- Gallery Section -->
     <h2>Explore Homes</h2>
-    <div id="gallery">
+    <div id="gallery" class="row">
         {{#each result}}
         <div class="card">
                     <div class="image-container">
@@ -70,9 +110,10 @@
                     </div>
                     <div class="content">
                         <h3>{{this.name}}</h3>
-                        <p>${home.location}</p>
-                        <p>Price: $${home.price}/night</p>
-                        <button onclick="bookHome('${home.title}')">Book Now</button>
+                        <p>{{this.address.street}}</p>
+                        <p><strong>Price:</strong> ${{this.price}}/night</p>
+                        <p><i class="fa-solid fa-bed text-danger"></i> {{this.beds}} &nbsp;|&nbsp; <i class="fa-solid fa-bath text-info"></i> {{this.bathrooms}}</p>
+                        <a href="/detail/{{this._id}}"><button>View Detail</button></a>
                     </div>
                 </div>
                 {{/each}}

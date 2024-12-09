@@ -28,6 +28,9 @@ const JWT_SECRET = process.env.secret_key || "$2a$10$VieH5MXzIrPIB4DQSyVuBuzpoiT
 // Middleware setup
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+// Middleware (query strings are parsed automatically)
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Handlebars engine configuration
@@ -89,6 +92,7 @@ app.set('view engine', 'hbs');
 app.set('views', path.join(__dirname, 'views'));
 
 const hbs = require('hbs');
+const listings = require('./models/listings');
 
 
 
@@ -116,13 +120,44 @@ const fileFilter = (req, file, cb) => {
 };
 
 const upload = multer({ storage: storageOptions, fileFilter });
-
 app.get('/listing', async (req, res) => {
   try {
-    const { page = 1, perPage = 12, minimum_nights } = req.query;
+    const {
+      page = 1,
+      perPage = 12,
+      minimum_nights,
+      name,
+      location,
+      minPrice,
+      maxPrice,
+    } = req.query; // Or use req.body if required
+
     const query = {};
+
+    // Add filter for minimum nights
     if (minimum_nights) {
       query.minimum_nights = { $gte: parseInt(minimum_nights, 10) };
+    }
+
+    // Add filter for name (case-insensitive search)
+    if (name) {
+      query.name = { $regex: name, $options: 'i' }; // Case-insensitive regex
+    }
+
+    // Add filter for location using dot notation (address.street)
+    if (location) {
+      query['address.street'] = { $regex: location, $options: 'i' }; // Case-insensitive regex
+    }
+
+    // Add filter for price range
+    if (minPrice || maxPrice) {
+      query.price = {};
+      if (minPrice) {
+        query.price.$gte = parseFloat(minPrice);
+      }
+      if (maxPrice) {
+        query.price.$lte = parseFloat(maxPrice);
+      }
     }
 
     const currentPage = parseInt(page, 10);
@@ -136,12 +171,10 @@ app.get('/listing', async (req, res) => {
     const total = await ListingsModel.countDocuments(query);
     const totalPages = Math.ceil(total / itemsPerPage);
 
-    
-    
     // Set the range of pages to display
     const delta = 1; // Number of pages around the current page
-    const startPage = Math.max(1, currentPage - delta); // Start from at least page 1
-    const endPage = Math.min(totalPages, currentPage + delta); // Ensure not to exceed total pages
+    const startPage = Math.max(1, currentPage - delta);
+    const endPage = Math.min(totalPages, currentPage + delta);
 
     // Always include first 3 pages and last 3 pages
     const visiblePages = [];
@@ -165,7 +198,7 @@ app.get('/listing', async (req, res) => {
     const pagesToShow = [];
 
     if (visiblePages[0] > firstPage) {
-      pagesToShow.push(firstPage); // Always show the first page
+      pagesToShow.push(firstPage);
       pagesToShow.push('...');
     }
 
@@ -173,8 +206,20 @@ app.get('/listing', async (req, res) => {
 
     if (visiblePages[visiblePages.length - 1] < lastPage) {
       pagesToShow.push('...');
-      pagesToShow.push(lastPage); // Always show the last page
+      pagesToShow.push(lastPage);
     }
+
+    console.log('Request URL:', req.originalUrl);
+
+    console.log('Object.entries(req.query):', Object.entries(req.query));
+
+
+    const queryString = Object.entries(req.query)
+    .filter(([key, value]) => key !== 'page') // Exclude current page
+    .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
+    .join('&');
+
+    console.log(queryString);
 
     res.render('frontListing', {
       result: listingData,
@@ -185,12 +230,13 @@ app.get('/listing', async (req, res) => {
       visiblePages: pagesToShow,
       startPage,
       endPage,
-      query: req.query, // Retain filters
+      queryString, // Retain filters
     });
   } catch (err) {
     res.status(500).send('Error fetching listings: ' + err.message);
   }
 });
+
 
 app.get('/detail/:listing_id', trackPageHit, async (req, res) => {
   try {
@@ -241,7 +287,7 @@ app.post('/login',
     const token = jwt.sign(
       { id: user._id, role: user.role, name: user.name, email: user.email },
       JWT_SECRET,
-      { expiresIn: '1h' } // Token expiration
+      { expiresIn: '2h' } // Token expiration
     );
     res.cookie('authToken', token, {
       httpOnly: true, // Prevent JavaScript access to the cookie
@@ -259,13 +305,18 @@ app.post('/login',
 
 // Assuming you are using Passport.js for authentication
 app.get('/logout', (req, res) => {
-  req.logout(function(err) {
-    if (err) {
-      return next(err);
-    }
-    res.redirect('/'); // Redirect the user after logging out
+  // Clear the authToken cookie
+  res.clearCookie('authToken', {
+    path: '/', // Ensure the path matches
   });
+
+  // Redirect to the listing page
+  res.redirect('/listing');
 });
+
+
+
+
 
 
 // Create a new user
@@ -330,11 +381,11 @@ app.post(
 // ***********************************************Users routes start*******************************************//
 
 
-// Get all users
-app.get('/', async (req, res) => {
+// Get all Airbnb Listing
+app.get('/', async  (req, res) => {
   try {
-    const users = await UserModel.find();
-    res.status(200).json(users);
+    const airbnb = await listings.find().limit(5);
+    res.status(200).json(airbnb);
   } catch (error) {
     res.status(400).json({ message: 'Error fetching users', error });
   }
@@ -391,7 +442,7 @@ app.delete('/:id', async (req, res) => {
 //********************************Front routes start*********************************//
 // Routes
 app.get('/', (req, res) => {
-  res.redirect('/api/listing');
+  res.redirect('/listing');
 });
 //********************************Front routes ends*********************************//
 
@@ -510,6 +561,48 @@ app.get('/admin/listing/:listingId', authenticate, authorizeAdmin, async (req, r
   }
 });
 
+app.get('/listing/addListing', authenticate, (req,res) => {
+
+  try{
+  res.render('AddListing');
+  }
+  catch(err){
+    res.status(500).send(' Error' + err.message);
+  }
+
+});
+
+app.post('/listing/addListing', async (req,res) => {
+  const { _id, listing_url, name, summary, description, price, bedrooms, bathrooms, amenities, cleaning_fee, address_street } = req.body;
+
+    // Create a new listing object with the required fields
+    const newListing = new ListingsModel({
+        _id, // Assign the provided _id
+        listing_url,
+        name,
+        summary,
+        description,
+        price,
+        bedrooms,
+        bathrooms,
+        amenities: amenities.split(','),
+        cleaning_fee,
+        address: {
+            street: address_street // Set street as the city location
+        }
+    });
+
+    try {
+        // Save the listing to the database
+        await newListing.save();
+        res.send('Listing added successfully!');
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Error adding listing');
+    }
+});
+
+
 
 app.get('/admin/export-csv', async (req, res) => {
   try {
@@ -543,6 +636,12 @@ console.log(pageHits);
     res.status(500).send('Error exporting CSV.');
   }
 });
+
+app.get('/admin/pagehitsreport', authenticate, authorizeAdmin, async (req, res) => {
+  res.render('pageHitsReport', {user: req.user});
+});
+
+
 
 
 

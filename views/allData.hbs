@@ -54,10 +54,10 @@
             <hr class="sidebar-divider my-0">
 
             <!-- Nav Item - Dashboard -->
-            <li class="nav-item">
-                <a class="nav-link" href="index.html">
+            <li class="nav-item active">
+                <a class="nav-link" href="/admin/listing">
                     <i class="fas fa-fw fa-tachometer-alt"></i>
-                    <span>Dashboard</span></a>
+                    <span>Listings</span></a>
             </li>
 
             
@@ -75,10 +75,15 @@
             
 
             <!-- Nav Item - Tables -->
-            <li class="nav-item active">
-                <a class="nav-link" href="tables.html">
+             <li class="nav-item">
+                <a class="nav-link" href="/admin/pagehitsreport">
                     <i class="fas fa-fw fa-table"></i>
-                    <span>Tables</span></a>
+                    <span>Reports</span></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/admin/export-csv">
+                    <i class="fa-solid fa-file-csv"></i>
+                    <span>Report CSV format</span></a>
             </li>
 
             <!-- Divider -->
@@ -127,19 +132,7 @@
                             <!-- Dropdown - User Information -->
                             <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
                                 aria-labelledby="userDropdown">
-                                <a class="dropdown-item" href="#">
-                                    <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
-                                    Profile
-                                </a>
-                                <a class="dropdown-item" href="#">
-                                    <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
-                                    Settings
-                                </a>
-                                <a class="dropdown-item" href="#">
-                                    <i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>
-                                    Activity Log
-                                </a>
-                                <div class="dropdown-divider"></div>
+                                
                                 <a class="dropdown-item" href="/logout" data-toggle="modal" data-target="#logoutModal">
                                     <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
                                     Logout
@@ -167,7 +160,7 @@
                                         <tr>
                                             <th>Title</th>
                                             <th data-orderable="false">Poster</th>
-                                            <th>Rating</th>
+                                            
                                             <th>Procing</th>
                                             <th data-orderable="false">Other Details</th>
                                             <th data-orderable="false">Actions</th>
@@ -193,7 +186,7 @@
   <img src="{{this.images.picture_url}}" onerror="this.src='/images/default-poster.jpg';" style="height:5 0px; width:50px; border-radius:5px;"/>
 </a>
   </td>
-  <td><i class="fa-solid fa-star rating-logo"></i> {{this.imdbRating}}</td>
+  
   <td>
     <span style="color:gray; font-size:12px;"> <span style="color:black;">Total Price: </span><span style="color:green;">$ {{this.price}}</span></span>
     <br>
@@ -240,7 +233,7 @@
 </div>
   </td>
   
-  <td><a href="/api/editmovie/{{this._id}}" class="btn btn-primary"><i class="fa-solid fa-pen"></i></a>
+  <td><a href="/admin/listingedit/{{this._id}}" class="btn btn-primary"><i class="fa-solid fa-pen"></i></a>
    <a href="#" class="btn btn-danger delete-btn" data-movie-id="{{this._id}}">
   <i class="fa-solid fa-trash"></i>
 </a>

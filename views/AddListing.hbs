@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/stylesheet/formAddListingStyle.css"  >
+    <title>Add Listing</title>
+</head>
+<body>
+    <h1>Add a New Listing</h1>
+    <form action="addListing" method="POST">
+        <label for="listing_url">Listing URL:</label>
+        <input type="url" id="listing_url" name="listing_url" required><br><br>
+
+        <label for="name">Listing Name:</label>
+        <input type="text" id="name" name="name" required><br><br>
+
+        <label for="summary">Summary:</label>
+        <textarea id="summary" name="summary" required></textarea><br><br>
+
+        <label for="description">Description:</label>
+        <textarea id="description" name="description" required></textarea><br><br>
+
+        <label for="price">Price:</label>
+        <input type="number" id="price" name="price" required><br><br>
+
+        <label for="bedrooms">Number of Bedrooms:</label>
+        <input type="number" id="bedrooms" name="bedrooms" required><br><br>
+
+        <label for="bathrooms">Number of Bathrooms:</label>
+        <input type="number" id="bathrooms" name="bathrooms" required><br><br>
+
+        <label for="amenities">Amenities (comma separated):</label>
+        <input type="text" id="amenities" name="amenities"><br><br>
+
+        <label for="cleaning_fee">Cleaning Fee:</label>
+        <input type="number" id="cleaning_fee" name="cleaning_fee" required><br><br>
+
+        <label for="address.street">City Location (Street Address):</label>
+        <input type="text" id="address.street" name="address.street" required><br><br> <!-- Corrected field name -->
+
+        <label for="listing_id">Listing ID (Optional):</label>
+        <input type="text" id="listing_id" name="_id"><br><br> <!-- Adding _id input -->
+
+        <button type="submit">Add Listing</button>
+    </form>
+</body>
+</html>

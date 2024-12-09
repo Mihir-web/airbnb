@@ -91,7 +91,7 @@
   </a>
 </div>
     <!-- Search Section -->
-    <form id="searchForm">
+    <form id="searchForm" action="/listing" method="get">
       <input type="text" id="search" name="search" placeholder="Enter Name" />
         <input type="text" id="location" name="location" placeholder="Enter Location" />
         <input type="number" id="minPrice" name="minPrice" placeholder="Min Price" />
@@ -127,35 +127,35 @@
  <nav aria-label="Page navigation">
   <ul class="pagination justify-content-center">
     
-    <!-- Previous Button -->
-    {{#if (gt page 1)}}
-      <li class="page-item">
-        <a class="page-link" href="?page={{subtract page 1}}&perPage=12{{#if query.minimum_nights}}&minimum_nights={{query.minimum_nights}}{{/if}}">&lt;</a>
-      </li>
-    {{/if}}
+   <!-- Previous Button -->
+{{#if (gt page 1)}}
+  <li class="page-item">
+    <a class="page-link" href="?page={{subtract page 1}}&{{queryString}}">&lt;</a>
+  </li>
+{{/if}}
 
-    <!-- Dynamic Pages -->
-    {{#each visiblePages}}
-      {{#if (eq this '...')}}
+<!-- Dynamic Pages -->
+{{#each visiblePages}}
+  {{#if (eq this '...')}}
+    <li class="page-item">
+      <span class="page-link">...</span>
+    </li>
+        {{else}}
+          <li class="page-item {{#if (eq ../page this)}}active{{/if}}">
+            <a class="page-link" href="?page={{this}}&{{../queryString}}">{{this}}</a>
+          </li>
+        {{/if}}
+      {{/each}}
+
+      <!-- Next Button -->
+      {{#if (lt page totalPages)}}
         <li class="page-item">
-          <span class="page-link">...</span>
-        </li>
-      {{else}}
-        <li class="page-item {{#if (eq ../page this)}}active{{/if}}">
-          <a class="page-link" href="?page={{this}}&perPage=12{{#if query.minimum_nights}}&minimum_nights={{query.minimum_nights}}{{/if}}">{{this}}</a>
+          <a class="page-link" href="?page={{add page 1}}&{{queryString}}">&gt;</a>
         </li>
       {{/if}}
-    {{/each}}
-
-    <!-- Next Button -->
-    {{#if (lt page totalPages)}}
-      <li class="page-item">
-        <a class="page-link" href="?page={{add page 1}}&perPage=12{{#if query.minimum_nights}}&minimum_nights={{query.minimum_nights}}{{/if}}">&gt;</a>
-      </li>
-    {{/if}}
 
   </ul>
-</nav>
+</nav>  
 </div>
 
 

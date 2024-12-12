@@ -1,7 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const path = require('path');
-const multer = require('multer');
+const multer = require('multer'); // Keep this line
 const { body, validationResult } = require('express-validator');
 const bodyParser = require('body-parser');
 const bcrypt = require('bcryptjs');
@@ -13,12 +13,18 @@ const { authenticate, authorizeAdmin } = require('./middleware/auth');
 const trackPageHit = require('./middleware/trackPageHit');
 const PageHits = require('./models/PageHits');
 const { Parser } = require('json2csv')
+const { v4: uuidv4 } = require('uuid');
+const methodOverride = require('method-override');
+
+
+// Multer configuration for file uploads
+const storageOptions = multer.memoryStorage(); // Use memory storage to keep files in memory as Buffer
+const upload = multer({ storage: storageOptions }); // Initialize multer with the storage options
 
 const jwt = require('jsonwebtoken');
 
 const UserModel = require('./models/users');
 const cookieParser = require('cookie-parser');
-
 
 const app = express();
 const port = process.env.PORT || 8000;
@@ -26,12 +32,18 @@ const JWT_SECRET = process.env.secret_key || "$2a$10$VieH5MXzIrPIB4DQSyVuBuzpoiT
 
 
 // Middleware setup
+app.use(methodOverride('_method')); // Add this before routes
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+
+// Middleware setup
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 // Middleware (query strings are parsed automatically)
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
+
+
 app.use(express.static(path.join(__dirname, 'public')));
+
 
 // Handlebars engine configuration
 app.engine('.hbs', engine({ extname: '.hbs',  helpers: {
@@ -104,11 +116,6 @@ mongoose
   .then(() => console.log('MongoDB connected successfully'))
   .catch((err) => console.error('MongoDB connection error:', err));
 
-// Multer configuration for file uploads
-const storageOptions = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, 'public/images/'),
-  filename: (req, file, cb) => cb(null, `${Date.now()}-${file.originalname}`)
-});
 
 const fileFilter = (req, file, cb) => {
   const isJpg = file.mimetype === 'image/jpeg';
@@ -119,7 +126,7 @@ const fileFilter = (req, file, cb) => {
   }
 };
 
-const upload = multer({ storage: storageOptions, fileFilter });
+
 app.get('/listing', async (req, res) => {
   try {
     const {
@@ -449,8 +456,58 @@ app.get('/', (req, res) => {
 //********************************Admin routes start*********************************//
 app.get('/admin/listing', authenticate, authorizeAdmin, async (req, res) => {
   try {
-    
-    const listingData = await ListingsModel.find().limit(10);
+    const { page = 1, perPage = 10, name, location, minPrice, maxPrice } = req.query;
+    const query = {};
+
+    // Add filter for name (case-insensitive search)
+    if (name) {
+      query.name = { $regex: name, $options: 'i' }; // Case-insensitive regex
+    }
+
+    // Add filter for location using dot notation (address.street)
+    if (location) {
+      query['address.street'] = { $regex: location, $options: 'i' }; // Case-insensitive regex
+    }
+
+    // Add filter for price range
+    if (minPrice || maxPrice) {
+      query.price = {};
+      if (minPrice) {
+        query.price.$gte = parseFloat(minPrice);
+      }
+      if (maxPrice) {
+        query.price.$lte = parseFloat(maxPrice);
+      }
+    }
+
+    const currentPage = parseInt(page, 10);
+    const itemsPerPage = parseInt(perPage, 10);
+
+    // Fetch paginated data and total items
+    const listingData = await ListingsModel.find(query)
+      .limit(itemsPerPage)
+      .skip((currentPage - 1) * itemsPerPage)
+      .exec();
+
+    const total = await ListingsModel.countDocuments(query);
+    const totalPages = Math.ceil(total / itemsPerPage);
+
+    // Pagination logic
+    const delta = 1; // Number of pages around the current page
+    const startPage = Math.max(1, currentPage - delta);
+    const endPage = Math.min(totalPages, currentPage + delta);
+
+    const visiblePages = [];
+    for (let i = 1; i <= Math.min(3, totalPages); i++) {
+      visiblePages.push(i);
+    }
+    for (let i = startPage; i <= endPage; i++) {
+      if (!visiblePages.includes(i)) visiblePages.push(i);
+    }
+    for (let i = Math.max(totalPages - 2, startPage); i <= totalPages; i++) {
+      if (!visiblePages.includes(i)) visiblePages.push(i);
+    }
+
     if (listingData.length) {
       const result = listingData.map((listing) => ({
         _id: listing._id,
@@ -492,10 +549,17 @@ app.get('/admin/listing', authenticate, authorizeAdmin, async (req, res) => {
         location: listing.location,
         availability: listing.availability,
         review_scores: listing.review_scores,
-        reviews: listing.reviews,
+        reviews: listing.reviews
       }));
-     
-      res.render('allData', { result: result, user: req.user});
+
+      res.render('allData', {
+        result,
+        user: req.user,
+        currentPage,
+        totalPages,
+        visiblePages,
+        searchParams: { name, location, minPrice, maxPrice }
+      });
     } else {
       res.status(404).render('error', { message: 'No listings found' });
     }
@@ -503,6 +567,41 @@ app.get('/admin/listing', authenticate, authorizeAdmin, async (req, res) => {
     res.status(500).send('Error fetching listings: ' + err.message);
   }
 });
+
+
+//route for search
+app.get('/admin/listing/search', authenticate, authorizeAdmin, async (req, res) => {
+  try {
+      const searchQuery = req.query.search; // Get the search term from query parameters
+      const query = {};
+
+      // Check if there is a search term
+      if (searchQuery) {
+          // Create a regex for case-insensitive matching
+          const regex = new RegExp(searchQuery, 'i'); // 'i' for case-insensitive
+
+          // Search by name or ID
+          query.$or = [
+              { _id: regex },  // Search by ID
+              { name: regex }  // Search by name
+          ];
+      }
+
+      // Fetch listings matching the query
+      const listingsData = await ListingsModel.find(query);
+
+      // Render results or show message if no listings found
+      if (listingsData.length > 0) {
+        res.render('allData', { result: listingsData });
+      } else {
+          res.render('allData', { result: [], message: 'No listings found matching your search.' });
+      }
+  } catch (err) {
+      console.error('Error during search:', err);
+      res.status(500).send('Error fetching listings: ' + err.message);
+  }
+});
+
 
 app.get('/admin/listing/:listingId', authenticate, authorizeAdmin, async (req, res) => {
   try {
@@ -561,46 +660,185 @@ app.get('/admin/listing/:listingId', authenticate, authorizeAdmin, async (req, r
   }
 });
 
-app.get('/listing/addListing', authenticate, (req,res) => {
 
-  try{
-  res.render('AddListing');
-  }
-  catch(err){
-    res.status(500).send(' Error' + err.message);
-  }
 
+
+
+app.get('/listing/addListing', authenticate, (req, res) => {
+  try {
+      res.render('AddListing'); // Render the AddListing form
+  } catch (err) {
+      res.status(500).send('Error: ' + err.message);
+  }
 });
 
-app.post('/listing/addListing', async (req,res) => {
-  const { _id, listing_url, name, summary, description, price, bedrooms, bathrooms, amenities, cleaning_fee, address_street } = req.body;
+//route for view details
+app.get('/listing/:id', async (req, res) => {
+  try {
+      const listingId = req.params.id; // Get the ID from the URL
+      const listing = await ListingsModel.findById(listingId); // Fetch the listing by ID
 
-    // Create a new listing object with the required fields
-    const newListing = new ListingsModel({
-        _id, // Assign the provided _id
+      if (!listing) {
+          return res.status(404).render('error', { message: 'Listing not found' });
+      }
+
+      res.render('listingDetail', { listing }); // Render the detail page with the listing data
+  } catch (err) {
+      console.error('Error fetching listing details:', err);
+      res.status(500).send('Error fetching listing details: ' + err.message);
+  }
+});
+
+
+
+
+// route for add
+app.post('/listing/addListing', upload.single('image'), async (req, res) => {
+    const {
         listing_url,
         name,
         summary,
         description,
-        price,
+        property_type,
+        room_type,
+        bed_type,
+        minimum_nights,
+        maximum_nights,
+        accommodates,
         bedrooms,
+        beds,
         bathrooms,
-        amenities: amenities.split(','),
+        amenities,
+        price,
+        security_deposit,
         cleaning_fee,
-        address: {
-            street: address_street // Set street as the city location
-        }
-    });
+        extra_people,
+        guests_included,
+        address_street,
+        address_suburb,
+        address_country
+    } = req.body;
 
-    try {
-        // Save the listing to the database
-        await newListing.save();
-        res.send('Listing added successfully!');
-    } catch (error) {
-        console.error(error);
-        res.status(500).send('Error adding listing');
-    }
+// Generate a new UUID for the listing
+    const _id = uuidv4();
+
+    // Create a new listing object with the required fields
+    const newListing = new ListingsModel({
+        _id, // Assign the generated _id
+        listing_url: listing_url || '',
+        name: name || '',
+        summary: summary || '',
+        description: description || '',
+        property_type: property_type || '',
+        room_type: room_type || '',
+        bed_type: bed_type || '',
+        minimum_nights: minimum_nights || 1, // Ensure it's a number
+        maximum_nights: maximum_nights || 30, // Ensure it's a number
+        accommodates: parseInt(accommodates) || 0, 
+        bedrooms: parseInt(bedrooms) || 0, 
+        beds: parseInt(beds) || 0, 
+        bathrooms: parseFloat(bathrooms) || 0, 
+        amenities : amenities ? amenities.split(',').map(item => item.trim()) : [],
+        price : parseFloat(price) || 0 , 
+        security_deposit : parseFloat(security_deposit) || 0 , 
+        cleaning_fee : parseFloat(cleaning_fee) || 0 , 
+        extra_people : parseFloat(extra_people) || 0 , 
+        guests_included : parseInt(guests_included) || 0 ,
+      address : {
+          street : address_street || '' ,
+          suburb : address_suburb || '' ,
+          country : address_country || ''
+      },
+      images : {
+          thumbnail_url: req.file ? `/images/thumbnail/${req.file.originalname}` : null, // Optional URL if you want to store paths too
+          medium_url: req.file ? `/images/medium/${req.file.originalname}` : null, // Optional URL if you want to store paths too
+          picture_data: req.file ? req.file.buffer : null , // Store the image data as Buffer
+          content_type: req.file ? req.file.mimetype : null // Store the content type of the image
+      }
+   });
+
+   try {
+       await newListing.save(); // Save the listing to the database
+       res.redirect('/admin/listing'); // Redirect to the listings page after successful addition
+   } catch (error) {
+       console.error(error);
+       res.status(500).render('error', { message : 'Error adding listing : ' + error.message });
+   }
 });
+
+
+  
+
+//route for edit
+app.get('/listing/edit/:id', async (req, res) => {
+  try {
+      // Fetch the listing by ID from the database
+      const listing = await ListingsModel.findById(req.params.id);
+      
+      // Check if the listing was found
+      if (!listing) {
+          return res.status(404).render('error', { message: 'Listing not found' });
+      }
+      
+      // Render the edit page with the listing data
+      res.render('edit', { listing });
+  } catch (err) {
+      // Log the error for debugging purposes
+      console.error('Error loading edit page:', err);
+      
+      // Render an error page with a relevant message
+      res.status(500).render('error', { message: 'Error loading edit page' });
+  }
+});
+
+app.post('/listing/edit/:id', async (req, res) => {
+  const listingId = req.params.id; // Get the ID from the URL
+  const { name, price, description, bedrooms, bathrooms } = req.body; // Extract other fields
+
+  try {
+      const updatedListing = await ListingsModel.findByIdAndUpdate(listingId, {
+          name,
+          price,
+          description,
+          bedrooms,
+          bathrooms,
+      }, { new: true }); // Return the updated document
+
+      if (!updatedListing) {
+          return res.status(404).render('error', { message: 'Listing not found' });
+      }
+      res.redirect('/admin/listing'); // Redirect after successful update
+  } catch (err) {
+      console.error('Error updating listing:', err); // Log error for debugging
+      res.status(500).render('error', { message: 'Error updating listing' });
+  }
+});
+
+
+
+
+
+//route for delete
+app.delete('/listing/:id', async (req, res) => {
+  const listingId = req.params.id; // Get the ID from the URL
+
+  try {
+      const deletedListing = await ListingsModel.findByIdAndDelete(listingId); // Delete the listing
+
+      if (!deletedListing) {
+          return res.status(404).render('error', { message: 'Listing not found' });
+      }
+
+      res.redirect('/admin/listing'); // Redirect after successful deletion
+  } catch (err) {
+      console.error('Error deleting listing:', err); // Log error for debugging
+      res.status(500).render('error', { message: 'Error deleting listing' });
+  }
+});
+
+
+
+
 
 
 

@@ -29,8 +29,23 @@
 	<link rel="stylesheet" href="../detail_page/css/transitions.css">
 	<link rel="stylesheet" href="../detail_page/css/responsive-min.css">
 	<script src="../detail_page/js/vendor/modernizr-2.8.3-respond-1.4.2.min.js"></script>
+	<style>
+  #map {
+    height: 400px;
+    width: 100%;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    border-radius: 8px; /* Rounded corners */
+    border: 1px solid #ccc; /* Light gray border */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+}
+
+</style>
+
 </head>
 <body>
+
+	
 	<!--[if lt IE 8]>
 		<p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
 	<![endif]-->
@@ -77,6 +92,7 @@
 			</div>
 			
 						
+		
 				
 		</div>
 		<!-- Home Slider End -->
@@ -127,12 +143,68 @@
 													</div>
 												</div>
 											</div>
+											<!-- Add the Map Here -->
+											<div class="at-widgets-holder">
+												<div class="at-widgets-title">
+													<h2>Map Location</h2>
+												</div>
+												<div class="at-widgets-content">
+													<div id="map"
+														style="height: 300px; width: 100%; margin-top: 20px; border-radius: 8px; border: 1px solid #ccc; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);">
+													</div>
+												</div>
+											</div>
+											
+											<script>
+												function initMap() {
+													const address = "{{listing.address.street}}, {{listing.address.suburb}}, {{listing.address.government_area}}, {{listing.address.country}}"; // Construct full address
+													const geocoder = new google.maps.Geocoder();
+
+													geocoder.geocode({ 'address': address }, function (results, status) {
+														if (status === 'OK') {
+															const map = new google.maps.Map(document.getElementById('map'), {
+																center: results[0].geometry.location,
+																zoom: 14,
+																styles: [ 
+																	{
+																		"featureType": "water",
+																		"elementType": "geometry",
+																		"stylers": [
+																			{ "color": "#e9e9e9" },
+																			{ "lightness": 17 }
+																		]
+																	},
+																	{
+																		"featureType": "landscape",
+																		"elementType": "geometry",
+																		"stylers": [
+																			{ "color": "#f5f5f5" },
+																			{ "lightness": 20 }
+																		]
+																	},
+																]
+															});
+															new google.maps.Marker({
+																position: results[0].geometry.location,
+																map: map
+															});
+														} else {
+															alert('Geocode was not successful for the following reason: ' + status);
+														}
+													});
+												}
+											</script>
 											
 											
-										</div>
-									</div>
-								</aside>
-							</div>
+											
+											<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBq23-5vXCUDeOshMmwebAAeh8o7uYyZ6w&callback=initMap" async
+												defer></script>
+											
+											
+											</div>
+											</div>
+											</aside>
+											</div>
 							<div class="col-xs-12 col-sm-12 col-md-12 col-lg-7 col-xl-8 float-left">
                               
 							        <img src="{{listing.images.picture_url}}" class="img-fluid mb-5 rounded" onerror="this.href='/images/default image.png';" alt="img description" >
@@ -585,6 +657,8 @@
 			</div>
 		</div>
 	</div>
+
+
 	<!-- Find Property Popup End-->
 	<script src="../detail_page/js/vendor/jquery-library.js"></script>
 	<script src="../detail_page/js/vendor/bootstrap.min.js"></script>
@@ -598,6 +672,11 @@
 	<script src="../detail_page/js/readmore.js"></script>
 	<script src="../detail_page/js/lightpick.js"></script>
 	<script src="../detail_page/js/main-min.js"></script>
+	
+	
+
+
+
 </body>
 
 <!-- Mirrored from amentotech.com/htmls/tenanto/propertysingle.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 09 Dec 2024 07:01:03 GMT -->

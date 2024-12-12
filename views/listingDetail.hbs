@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Listing Details</title>
+    <link rel="stylesheet" href="/path/to/your/styles.css"> <!-- Link to your CSS file -->
+</head>
+<body>
+    <div class="container">
+        <h1>Listing Details for {{listing.name}}</h1>
+        
+        <h2>Basic Information</h2>
+        <ul>
+            <li><strong>ID:</strong> {{listing._id}}</li>
+            <li><strong>URL:</strong> <a href="{{listing.listing_url}}" target="_blank">{{listing.listing_url}}</a></li>
+            <li><strong>Summary:</strong> {{listing.summary}}</li>
+            <li><strong>Description:</strong> {{listing.description}}</li>
+            <li><strong>Price:</strong> ${{listing.price}}</li>
+            <li><strong>Bedrooms:</strong> {{listing.bedrooms}}</li>
+            <li><strong>Bathrooms:</strong> {{listing.bathrooms}}</li>
+            <li><strong>Accommodates:</strong> {{listing.accommodates}}</li>
+        </ul>
+
+        <h2>Amenities</h2>
+        <ul>
+            {{#each listing.amenities}}
+                <li>{{this}}</li>
+            {{/each}}
+        </ul>
+
+       
+        <!-- Back button -->
+        <a href="/admin/listing" class="btn btn-secondary">Back to Listings</a>
+
+    </div>
+
+    <!-- Optionally include your JavaScript here -->
+</body>
+</html>

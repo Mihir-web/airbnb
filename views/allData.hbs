@@ -31,10 +31,22 @@
 <!-- Add SweetAlert CDN in the head section -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.4.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+
 </head>
 
 <body id="page-top">
 
+  <!-- Display any messages -->
+    {{#if message}}
+        <div class="alert alert-warning">{{message}}</div>
+    {{/if}}
+
+    
     <!-- Page Wrapper -->
     <div id="wrapper">
 
@@ -147,127 +159,124 @@
 
                 <!-- Begin Page Content -->
                 <div class="container-fluid">
+                <!-- Searcb Bar -->
+<form action="/admin/listing/search" method="GET" class="mb-4">
+  <div class="input-group">
+    <input type="text" name="search" class="form-control" placeholder="Search by name or ID">
+    <div class="input-group-append">
+      <button class="btn btn-primary" type="submit">Search</button>
+    </div>
+  </div>
+</form>
+
+
+<!-- End of Search Bar -->
 
                     <!-- DataTales Example -->
                     <div class="card shadow mb-4">
-                        <div class="card-header py-3">
-                            <h6 class="m-0 font-weight-bold text-primary">Listing</h6>
+    <div class="card-header py-3 d-flex justify-content-between align-items-center">
+        <h6 class="m-0 font-weight-bold text-primary">Listing</h6>
+        <a href="/listing/addListing" class="btn btn-success btn-sm">
+            <i class="fas fa-plus"></i> Add Listing
+        </a>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th data-orderable="false">Poster</th>
+                        <th>Pricing</th>
+                        <th data-orderable="false">Other Details</th>
+                        <th data-orderable="false">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                   {{#each result}}
+                    <tr>
+                      <td width="25%">
+                        {{this.name}}
+                        <br>
+                        <span style="color:gray; font-size:12px;">{{this.property_type}}</span>
+                        <br>
+                        <span style="color:gray; font-size:12px;"> <span style="color:black;">Room Type:</span> {{this.room_type}}</span>
+                        <br>
+                        <span style="color:gray; font-size:12px;"> <span style="color:black;">Accommodate :</span> {{this.accommodates}} People</span>
+                        <br>
+                        <span style="color:gray; font-size:12px;"> <span style="color:black;">Beds :</span> {{this.bedrooms}} | <span style="color:black;">Baths :</span> {{this.bathrooms}}</span>
+                      </td>
+                      <td>
+                      <a href="{{this.images.picture_url}}" onerror="this.href='/images/default-poster.jpg';" data-fancybox data-caption="Single image">
+                      <img src="{{this.images.picture_url}}" onerror="this.src='/images/default-poster.jpg';" style="height:50px; width:50px; border-radius:5px;"/>
+                    </a>
+                      </td>
+                      <td>
+                        <span style="color:gray; font-size:12px;"> <span style="color:black;">Total Price: </span><span style="color:green;">$ {{this.price}}</span></span>
+                        <br>
+                        <span style="color:gray; font-size:12px;"> <span style="color:black;">Cleaning Fee: </span><span style="color:green;">$ {{this.cleaning_fee}}</span></span>
+                      </td>
+                      <td>
+                        <a href="/listing/{{this._id}}" class="btn btn-info">View Details</a>
+                        </button>
+                        <div class="modal fade" id="exampleModal{{this.Movie_ID}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                          <div class="modal-dialog modal-lg" role="document">
+                            <div class="modal-content">
+                              <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">{{this.Title}}</h5>
+                              
+                            </div>
+                          </div>
                         </div>
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                                    <thead>
-                                        <tr>
-                                            <th>Title</th>
-                                            <th data-orderable="false">Poster</th>
-                                            
-                                            <th>Procing</th>
-                                            <th data-orderable="false">Other Details</th>
-                                            <th data-orderable="false">Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                       {{#each result}}
-<tr>
-  <td width="25%">
-    {{this.name}}
-    <br>
-    <span style="color:gray; font-size:12px;">{{this.property_type}}</span>
-    <br>
-    <span style="color:gray; font-size:12px;"> <span style="color:black;">Room Type:</span> {{this.room_type}}</span>
-    <br>
-    <span style="color:gray; font-size:12px;"> <span style="color:black;">Accommodate :</span> {{this.accommodates}} People</span>
-    <br>
-    <span style="color:gray; font-size:12px;"> <span style="color:black;">Beds :</span> {{this.bedrooms}} | <span style="color:black;">Baths :</span> {{this.bathrooms}}</span>
-    
-  </td>
-  <td>
-  <a href="{{this.images.picture_url}}" onerror="this.href='/images/default-poster.jpg';" data-fancybox data-caption="Single image">
-  <img src="{{this.images.picture_url}}" onerror="this.src='/images/default-poster.jpg';" style="height:5 0px; width:50px; border-radius:5px;"/>
+                      </td>
+                      <td>
+  <!-- Edit Button -->
+  <a href="/listing/edit/{{this._id}}" class="btn btn-primary">
+    <i class="fa-solid fa-pen"></i>
+  </a>
+  <!-- Delete Button -->
+<a href="javascript:void(0);" class="btn btn-danger delete-btn" data-listing-id="{{this._id}}">
+    <i class="fa-solid fa-trash"></i>
 </a>
-  </td>
-  
-  <td>
-    <span style="color:gray; font-size:12px;"> <span style="color:black;">Total Price: </span><span style="color:green;">$ {{this.price}}</span></span>
-    <br>
-    <span style="color:gray; font-size:12px;"> <span style="color:black;">Cleaning Fee: </span><span style="color:green;">$ {{this.cleaning_fee}}</span></span>
-  <td>
-    <!-- Button trigger modal -->
-<button type="button" class="btn btn-success" data-toggle="modal" data-target="#exampleModal{{this.Movie_ID}}">
-  <i class="fa-regular fa-eye"></i>
-</button>
 
-<!-- Modal -->
-<div class="modal fade" id="exampleModal{{this.Movie_ID}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg" role="document">
+
+
+
+</td>
+                    </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="editPriceModal{{this._id}}" tabindex="-1" role="dialog" aria-labelledby="editPriceModalLabel{{this._id}}" aria-hidden="true">
+  <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">{{this.Title}}</h5>
+        <h5 class="modal-title" id="editPriceModalLabel{{this._id}}">Edit Price</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-      <div class="modal-body">
-        <ul>
-          <li>Year: <span class="text-secondary">{{this.Year}}</span></li>
-          <li>Rated: <span class="text-secondary">{{this.Rated}}</span></li>
-          <li>Runtime: <span class="text-secondary">{{this.Runtime}}</span></li>
-          <li>Genre: <span class="text-secondary">{{this.Genre}}</span></li>
-          <li>Director: <span class="text-secondary">{{this.Director}}</span></li>
-          <li>Writer: <span class="text-secondary">{{this.Writer}}</span></li>
-          <li>Actors: <span class="text-secondary">{{this.Actors}}</span></li>
-          <li>Plot: <span class="text-secondary">{{this.Plot}}</span></li>
-          <li>Language: <span class="text-secondary">{{this.Language}}</span></li>
-          <li>Country: <span class="text-secondary">{{this.Country}}</span></li>
-          <li>Awards: <span class="text-secondary">{{this.Awards}}</span></li>
-          <li>Metascore: <span class="text-secondary">{{this.Metascore}}</span></li>
-          <li>Production: <span class="text-secondary">{{this.Production}}</span></li>
-          <li>TomatoUrl: <a href="{{this.tomatoURL}}" target="_blank"><span class="text-primary">{{this.tomatoURL}}</span></a></li>
-          </ul>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-      </div>
+      <form action="/admin/listingedit/{{this._id}}" method="POST">
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="price">Current Price</label>
+            <input type="number" class="form-control" id="price" name="price" value="{{this.price}}" required />
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Changes</button>
+        </div>
+      </form>
     </div>
   </div>
 </div>
-  </td>
-  
-  <td><a href="/admin/listingedit/{{this._id}}" class="btn btn-primary"><i class="fa-solid fa-pen"></i></a>
-   <a href="#" class="btn btn-danger delete-btn" data-movie-id="{{this._id}}">
-  <i class="fa-solid fa-trash"></i>
-</a>
 
-   </td>
-</tr>
-{{/each}}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-                <!-- /.container-fluid -->
-
-            </div>
-            <!-- End of Main Content -->
-
-            <!-- Footer -->
-            <footer class="sticky-footer bg-white">
-                <div class="container my-auto">
-                    <div class="copyright text-center my-auto">
-                        <span>Copyright &copy; Your Website 2020</span>
-                    </div>
-                </div>
-            </footer>
-            <!-- End of Footer -->
-
-        </div>
-        <!-- End of Content Wrapper -->
-
-    </div>
-    <!-- End of Page Wrapper -->
 
     <!-- Scroll to Top Button-->
     <a class="scroll-to-top rounded" href="#page-top">
@@ -313,67 +322,35 @@
 
       <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-  // Attach click event to delete buttons
-  document.querySelectorAll('.delete-btn').forEach(button => {
-    button.addEventListener('click', function(e) {
-      e.preventDefault();  // Prevent default anchor behavior
-      const movieId = this.getAttribute('data-movie-id');  // Get the movie ID from the button's data attribute
+  
 
-      // Show SweetAlert confirmation
-      Swal.fire({
-        title: 'Are you sure?',
-        text: "You won't be able to revert this!",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Yes, delete it!',
-        cancelButtonText: 'Cancel',
-      }).then((result) => {
-        if (result.isConfirmed) {
-          // If the user confirms, delete the movie
-          deleteMovie(movieId);
-        }
-      });
-    });
-  });
 
-  // Function to delete the movie using AJAX
-  function deleteMovie(movieId) {
-    fetch(`/api/deletemovie/${movieId}`, {
-      method: 'GET',  // Assuming you're using a GET method for deletion
-      headers: {
-        'Content-Type': 'application/json'
-      },
-    })
-    .then(response => {
-      if (response.ok) {
-        // If the deletion is successful, show a success message
-        Swal.fire(
-          'Deleted!',
-          'The movie has been deleted.',
-          'success'
-        ).then(() => {
-          // Optionally, you can reload the page or redirect
-          window.location.reload();  // Reload the page to update the movie list
+document.addEventListener('DOMContentLoaded', function() {
+    const deleteButtons = document.querySelectorAll('.delete-btn');
+
+    deleteButtons.forEach(button => {
+        button.addEventListener('click', function(event) {
+            event.preventDefault(); // Prevent default anchor behavior
+            const listingId = this.getAttribute('data-listing-id'); // Get the listing ID
+
+            // Confirm deletion
+            if (confirm('Are you sure you want to delete this listing?')) {
+                // Create a form to send the DELETE request
+                const form = document.createElement('form');
+                form.method = 'POST'; // Use POST with method override
+                form.action = `/listing/${listingId}?_method=DELETE`; // Set action URL
+
+                // Append form to body and submit
+                document.body.appendChild(form);
+                form.submit();
+            }
         });
-      } else {
-        // Show an error message if something went wrong
-        Swal.fire(
-          'Error!',
-          'There was a problem deleting the movie.',
-          'error'
-        );
-      }
-    })
-    .catch(error => {
-      console.error('Error:', error);
-      Swal.fire(
-        'Error!',
-        'There was a problem deleting the movie.',
-        'error'
-      );
     });
-  }
+});
 </script>
+
+
+
 
 </body>
 

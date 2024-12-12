@@ -3,46 +3,137 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/stylesheet/formAddListingStyle.css"  >
-    <title>Add Listing</title>
+    <title>Add New Airbnb Listing</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
-    <h1>Add a New Listing</h1>
-    <form action="addListing" method="POST">
-        <label for="listing_url">Listing URL:</label>
-        <input type="url" id="listing_url" name="listing_url" required><br><br>
 
-        <label for="name">Listing Name:</label>
-        <input type="text" id="name" name="name" required><br><br>
+<div class="container mt-5">
+  <h2 class="text-center">Add New Airbnb Listing</h2>
+  <form id="addListingForm" action="/listing/addListing" method="POST" enctype="multipart/form-data">
+    <div class="form-row">
+      <div class="form-group col-md-6">
+        <label for="name">Name</label>
+        <input type="text" class="form-control" id="name" name="name" required>
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="summary">Summary</label>
+      <textarea class="form-control" id="summary" name="summary" rows="3" required></textarea>
+    </div>
+    <div class="form-group">
+      <label for="description">Description</label>
+      <textarea class="form-control" id="description" name="description" rows="3" required></textarea>
+    </div>
+    <div class="form-row">
+      <div class="form-group col-md-4">
+        <label for="property_type">Property Type</label>
+        <input type="text" class="form-control" id="property_type" name="property_type" required>
+      </div>
+      <div class="form-group col-md-4">
+        <label for="room_type">Room Type</label>
+        <input type="text" class="form-control" id="room_type" name="room_type" required>
+      </div>
+      <div class="form-group col-md-4">
+        <label for="bed_type">Bed Type</label>
+        <input type="text" class="form-control" id="bed_type" name="bed_type" required>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group col-md-3">
+        <label for="minimum_nights">Minimum Nights</label>
+        <input type="number" class="form-control" id="minimum_nights" name="minimum_nights" required>
+      </div>
+      <div class="form-group col-md-3">
+        <label for="maximum_nights">Maximum Nights</label>
+        <input type="number" class="form-control" id="maximum_nights" name="maximum_nights" required>
+      </div>
+      <div class="form-group col-md-3">
+        <label for="accommodates">Accommodates</label>
+        <input type="number" class="form-control" id="accommodates" name="accommodates" required>
+      </div>
+      <div class="form-group col-md-3">
+        <label for="bedrooms">Bedrooms</label>
+        <input type="number" class="form-control" id="bedrooms" name="bedrooms" required>
+      </div>
+    </div>
+    <div class='form-row'>
+      <div class='form-group col-md-4'>
+        <label for='bathrooms'>Bathrooms</label> 
+        <input type='number' class='form-control' id='bathrooms' name='bathrooms' step='0.5' required> 
+      </div> 
+      <div class='form-group col-md-4'>
+        <label for='price'>Price</label> 
+        <input type='number' class='form-control' id='price' name='price' step='.01' required> 
+      </div> 
+      <div class='form-group col-md-4'>
+        <label for='cleaning_fee'>Cleaning Fee</label> 
+        <input type='number' class='form-control' id='cleaning_fee' name='cleaning_fee' step='.01'> 
+      </div> 
+    </div> 
+    <!-- Optional amenities input -->
+    <div class='form-group'>
+      <label for='amenities'>Amenities (comma-separated)</label> 
+      <input type='text' class='form-control' id='amenities' name='amenities'> 
+    </div> 
+    <!-- Optional image upload -->
+    <div class='form-group'>
+      <label for='image'>Listing Image</label> 
+      <input type='file' class='form-control-file' id='image' name='image' accept='image/*'> 
+    </div> 
+    <!-- Submit button -->
+    <button type='submit' class='btn btn-primary btn-block'>Add Listing</button> 
+  </form> 
 
-        <label for="summary">Summary:</label>
-        <textarea id="summary" name="summary" required></textarea><br><br>
+  <!-- Success Modal -->
+  <div class='modal fade' id='successModal' tabindex='-1' role='dialog' aria-labelledby='successModalLabel' aria-hidden='true'>
+    <div class='modal-dialog' role='document'>
+      <div class='modal-content'>
+        <div class='modal-header'>
+          <h5 class='modal-title' id='successModalLabel'>Success</h5>
+          <button type='button' class='close' data-dismiss='modal' aria-label='Close'>
+            <span aria-hidden='true'>&times;</span>
+          </button>
+        </div>
+        <div class='modal-body'>
+          Data inserted successfully!
+        </div>
+        <div class='modal-footer'>
+          <button type='button' class='btn btn-secondary' data-dismiss='modal'>Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
-        <label for="description">Description:</label>
-        <textarea id="description" name="description" required></textarea><br><br>
+</div>
 
-        <label for="price">Price:</label>
-        <input type="number" id="price" name="price" required><br><br>
+<!-- Include Bootstrap JS and jQuery at the end of your body -->
+<script src=https://code.jquery.com/jquery-3.5.1.slim.min.js></script> 
+<script src=https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js></script>
 
-        <label for="bedrooms">Number of Bedrooms:</label>
-        <input type="number" id="bedrooms" name="bedrooms" required><br><br>
+<script>
+// Show the success modal when the form is submitted successfully
+$(document).ready(function() {
+  $('#addListingForm').on('submit', function(event) {
+    event.preventDefault(); // Prevent default form submission
+    const form = $(this);
+    
+    $.ajax({
+      type: form.attr('method'),
+      url: form.attr('action'),
+      data: form.serialize(),
+      success: function(response) {
+        $('#successModal').modal('show'); // Show the success modal
+        form[0].reset(); // Reset the form fields
+      },
+      error: function(xhr) {
+        console.error('Error:', xhr.responseText);
+        // Handle error case here if needed
+      }
+    });
+  });
+});
+</script>
 
-        <label for="bathrooms">Number of Bathrooms:</label>
-        <input type="number" id="bathrooms" name="bathrooms" required><br><br>
-
-        <label for="amenities">Amenities (comma separated):</label>
-        <input type="text" id="amenities" name="amenities"><br><br>
-
-        <label for="cleaning_fee">Cleaning Fee:</label>
-        <input type="number" id="cleaning_fee" name="cleaning_fee" required><br><br>
-
-        <label for="address.street">City Location (Street Address):</label>
-        <input type="text" id="address.street" name="address.street" required><br><br> <!-- Corrected field name -->
-
-        <label for="listing_id">Listing ID (Optional):</label>
-        <input type="text" id="listing_id" name="_id"><br><br> <!-- Adding _id input -->
-
-        <button type="submit">Add Listing</button>
-    </form>
 </body>
 </html>
